@@ -8,6 +8,7 @@ import os
 from typing import List
 import datetime
 from pydantic import BaseModel
+import numpy as np
 
 # load the 2 datasets for statistics
 print("Loading datasets...")
@@ -59,6 +60,8 @@ class TrendQuery(BaseModel):
     period: int
     age_group: list[int]
 
+year = datetime.date.today().year
+
 @app.post("/trend/products")
 async def trend_products(
     query: TrendQuery
@@ -77,8 +80,7 @@ async def trend_products(
     period = query.period
     
     df = journey[journey["CustomerState"].isin(regions)]
-    df = df[(df["Month"] > season[0]) & (df["Month"] < season[1])]
-    year = datetime.date.today().year
+    df = df[(df["Month"] >= season[0]) & (df["Month"] <= season[1])]
     df = df[(df["Year"] >= (year - period)) & (df["Year"] < year)]
     df = df[(df["Age"] >= age_group[0]) & (df["Age"] <= age_group[1])]
     print(df)
@@ -91,6 +93,61 @@ async def trend_products(
     return response
 
 
+@app.post("/trend/travels")
+async def trend_travels(
+    query: TrendQuery
+):
+    """
+    Show trending travels
+    """
+    regions = query.regions
+    season = query.season
+    age_group = query.age_group
+    period = query.period
+    
+    years = range(year - period, year)
+    df = journey[(journey["Age"] >= age_group[0]) & (journey["Age"] <= age_group[1])]
+    response = {}
+    for region in regions:
+        df_region = df[df["CustomerState"] == region]
+        response[region] = {}
+        for cur_year in years:
+            response[region][cur_year] = []
+            gf = df_region[df_region["Year"] == cur_year]
+            for month in range(season[0], season[1]+1):
+                gfm = gf[gf["Month"]==month]
+                response[region][cur_year].append(len(gfm))
+    return response
+
+
+@app.post("/trend/seasons")
+async def trend_seasons(
+    query: TrendQuery
+):
+    """
+    Show seasonal trends
+    """
+    regions = query.regions
+    season = query.season
+    age_group = query.age_group
+    period = query.period
+    
+    years = range(year - period, year)
+    df = journey[(journey["Age"] >= age_group[0]) & (journey["Age"] <= age_group[1])]
+    stat = {}
+    for region in regions:
+        df_region = df[df["CustomerState"] == region]
+        stat[region] = {}
+        for cur_year in years:
+            stat[region][cur_year] = []
+            gf = df_region[df_region["Year"] == cur_year]
+            for month in range(season[0], season[1]+1):
+                gfm = gf[gf["Month"]==month]
+                stat[region][cur_year].append(len(gfm))
+    response = {}
+    for region in regions:
+        response[region] = (sum([np.array(stat[region][x]) for x in years])/period).tolist()
+    return response
 
 
 if __name__ == "__main__":

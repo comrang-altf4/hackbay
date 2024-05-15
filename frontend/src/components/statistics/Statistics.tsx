@@ -14,6 +14,9 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelectionContext } from "../../contexts/SelectionContext";
 import { useState } from "react";
+import ProductTrend from "./ProductTrend";
+import TravelTrend from "./TravelTrend";
+import RegionTrend from "./RegionTrend";
 
 const SEASONS = [
   { name: "January", value: [1, 1] },
@@ -103,7 +106,9 @@ export default function Statistics() {
               }
             >
               {SEASONS.map(({ name, value }) => (
-                <MenuItem value={encodeSeason(value)}>{name}</MenuItem>
+                <MenuItem key={name} value={encodeSeason(value)}>
+                  {name}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -117,7 +122,9 @@ export default function Statistics() {
               onChange={(e) => setPeriod(e.target.value as number)}
             >
               {PERIODS.map((period) => (
-                <MenuItem value={period}>Over {period} year(s)</MenuItem>
+                <MenuItem key={period} value={period}>
+                  Over {period} year(s)
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -160,7 +167,6 @@ export default function Statistics() {
                     boxShadow: "0 0 2px 0px rgba(0, 0, 0, 0.1)",
                     "&:focus, &:hover, &.Mui-active": {
                       boxShadow: "0px 0px 3px 1px rgba(0, 0, 0, 0.1)",
-                      // Reset on touch devices, it doesn't add specificity
                       "@media (hover: none)": {
                         boxShadow:
                           "0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)",
@@ -198,7 +204,9 @@ export default function Statistics() {
               <b>Product Trend</b>
             </Typography>
           </AccordionSummary>
-          <AccordionDetails></AccordionDetails>
+          <AccordionDetails>
+            <ProductTrend />
+          </AccordionDetails>
         </Accordion>
         <Accordion
           disableGutters
@@ -213,7 +221,9 @@ export default function Statistics() {
               <b>Travel Trend</b>
             </Typography>
           </AccordionSummary>
-          <AccordionDetails></AccordionDetails>
+          <AccordionDetails>
+            <TravelTrend />
+          </AccordionDetails>
         </Accordion>
         <Accordion
           disableGutters
@@ -228,7 +238,9 @@ export default function Statistics() {
               <b>Season Trend</b>
             </Typography>
           </AccordionSummary>
-          <AccordionDetails></AccordionDetails>
+          <AccordionDetails>
+            <RegionTrend />
+          </AccordionDetails>
         </Accordion>
       </Box>
     </Box>

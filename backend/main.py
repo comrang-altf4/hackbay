@@ -1,9 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import pandas as pd
 import os
 import datetime
 from pydantic import BaseModel
-import numpy as np
+from predictive import PredictiveModel
 
 # load the 2 datasets for statistics
 print("Loading datasets...")
@@ -66,17 +66,28 @@ async def trend_travels(
     period = query.period
     
     years = range(year - period, year)
+    
     df = journey[(journey["Age"] >= age_group[0]) & (journey["Age"] <= age_group[1])]
+    df = df[df["CustomerState"].isin(regions)]
+    df = df[(df["Month"] >= season[0]) & (df["Month"] <= season[1])]
+    df = df[(df["Year"] >= (year - period)) & (df["Year"] < year)]
+    df = df.sort_values(["Year", "Month"])
     response = {}
     for region in regions:
-        df_region = df[df["CustomerState"] == region]
-        response[region] = {}
-        for cur_year in years:
-            response[region][cur_year] = {}
-            gf = df_region[df_region["Year"] == cur_year]
-            for month in range(season[0], season[1]+1):
-                gfm = gf[gf["Month"]==month]
-                response[region][cur_year][month] = len(gfm)
+        dfr = df[df["CustomerState"] == region]
+        dfr = dfr.groupby(["Year", "Month"]).agg({"Age": "count"}).reset_index()
+        dfr = dfr.rename({"Age": "SalesCount"}, axis=1)
+        response[region] = dfr.to_dict(orient="records")
+    # response = {}
+    # for region in regions:
+    #     df_region = df[df["CustomerState"] == region]
+    #     response[region] = {}
+    #     for cur_year in years:
+    #         response[region][cur_year] = {}
+    #         gf = df_region[df_region["Year"] == cur_year]
+    #         for month in range(season[0], season[1]+1):
+    #             gfm = gf[gf["Month"]==month]
+    #             response[region][cur_year][month] = len(gfm)
     return response
 
 
@@ -109,6 +120,37 @@ async def trend_regions(
     for region in regions:
         response[region] = sum([sum(stat[region][y]) for y in years])/(period*season_diff)
     return response
+
+class SalesArea(BaseModel):
+    name: str
+    future_period: int # how many years in future, from 2024 onwards
+
+
+@app.post("/predictive")
+async def predictive(
+    sales_area: SalesArea
+):
+    """
+    Show monthly product sales prediction for a few years
+    """
+    name = sales_area.name
+    future_period = sales_area.future_period
+    steps = future_period*12
+    past_period = 2 # return 2 nearest years
+    if name == "all":
+        y = nop[nop["Year"] < year].groupby(["Year", "Month"]).agg({
+            "Number_of_participants": "sum"
+        })["Number_of_participants"]
+    else:
+        nops = nop[nop["Sales_area"] == name]
+        if len(nops) < past_period*12:
+            raise HTTPException(400, "There is not enough data for this sale area")
+        y = nops[nops["Year"] < year].groupby(["Year", "Month"]).agg({
+            "Number_of_participants": "sum"
+        })["Number_of_participants"]
+    m = PredictiveModel(name, y)
+    forecast = m.predict(steps)
+    return {"history": y[-past_period*12:].tolist(), "forecast": forecast.tolist()}
 
 
 if __name__ == "__main__":

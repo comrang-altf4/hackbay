@@ -77,10 +77,12 @@ export default function Statistics() {
       <Box
         sx={{
           display: "flex",
+          maxWidth: "100%",
+          maxHeight: "95%",
           flexDirection: "column",
           alignItems: "center",
           gap: 1,
-          padding: "10px 20px 10px 20px",
+          padding: "10px 20px 0px 20px",
           overflow: "hidden",
           overflowY: "auto",
         }}

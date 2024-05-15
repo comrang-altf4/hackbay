@@ -31,7 +31,8 @@ export default function TravelTrendProvider(props: { children: ReactNode }) {
   const [travelTrend, setTravelTrend] = useState<TravelTrend[]>([]);
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || "";
-    if (serverUrl && regions.length > 0) {
+    if (regions.length === 0) setTravelTrend([]);
+    else if (serverUrl) {
       fetch(serverUrl + "/trend/travels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,10 +40,15 @@ export default function TravelTrendProvider(props: { children: ReactNode }) {
       }).then(async (response) => {
         if (response.status < 400) {
           const responseBody = await response.json();
+          console.log(responseBody);
           setTravelTrend(
             Object.entries<any>(responseBody).map(([region, value]) => {
               const history = (value as any[]).map(
-                ({ year, month, sales }) => ({ year, month, count: sales })
+                ({ Year, Month, SalesCount }) => ({
+                  year: Year,
+                  month: Month,
+                  count: SalesCount,
+                })
               );
               return { region, history };
             })

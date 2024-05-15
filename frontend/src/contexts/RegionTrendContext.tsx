@@ -22,7 +22,8 @@ export default function RegionTrendProvider(props: { children: ReactNode }) {
   const [regionTrend, setRegionTrend] = useState<RegionTrend[]>([]);
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || "";
-    if (serverUrl && regions.length > 0) {
+    if (regions.length === 0) setRegionTrend([]);
+    else if (serverUrl) {
       fetch(serverUrl + "/trend/regions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -27,7 +27,8 @@ export default function ProductTrendProvider(props: { children: ReactNode }) {
   const [productTrend, setProductTrend] = useState<ProductTrend[]>([]);
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || "";
-    if (serverUrl && regions.length > 0) {
+    if (regions.length === 0) setProductTrend([]);
+    else if (serverUrl) {
       fetch(serverUrl + "/trend/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

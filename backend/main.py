@@ -88,7 +88,7 @@ async def trend_products(
         "Age": "count",
         "JourneyProductName": "first",
         "Duration": "first",
-    }).reset_index().rename({"Age": "SalesCount"}, axis=1).sort_values(["SalesCount"]).head(10)
+    }).reset_index().rename({"Age": "SalesCount"}, axis=1).sort_values(["SalesCount"], ascending=False).head(10)
     response = df.to_dict(orient="records")
     return response
 

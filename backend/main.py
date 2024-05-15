@@ -5,14 +5,26 @@ import datetime
 from pydantic import BaseModel
 from predictive import PredictiveModel
 
+# Whatever as long as it works
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
 # load the 2 datasets for statistics
 print("Loading datasets...")
 data_folder = "data"
 nop = pd.read_csv(os.path.join(data_folder, "number_of_participants_v1.csv"))
 journey = pd.read_csv(os.path.join(data_folder, "journey_final.csv"))
 print("Finished loading")
-
-app = FastAPI()
 
 class TrendQuery(BaseModel):
     regions: list[str]

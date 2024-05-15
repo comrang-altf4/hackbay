@@ -9,6 +9,7 @@ export default function TravelTrend() {
     if (travelTrend.length === 0) return [];
     return travelTrend[0].history.map(({ year, month }) => `${month}.${year}`);
   }, [travelTrend]);
+  console.log(travelTrend);
   return travelTrend.length > 0 ? (
     <LineChart
       sx={{ width: "100%" }}

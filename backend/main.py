@@ -55,7 +55,6 @@ async def trend_products(
     df = df[(df["Month"] >= season[0]) & (df["Month"] <= season[1])]
     df = df[(df["Year"] >= (year - period)) & (df["Year"] < year)]
     df = df[(df["Age"] >= age_group[0]) & (df["Age"] <= age_group[1])]
-    print(df)
     df = df.groupby("JourneyProductCode").agg({
         "Age": "count",
         "JourneyProductName": "first",

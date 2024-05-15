@@ -61,7 +61,7 @@ export default function Statistics() {
   const [expanding, setExpanding] = useState({
     product: true,
     travel: true,
-    region: true,
+    season: true,
   });
 
   return (
@@ -219,13 +219,13 @@ export default function Statistics() {
           disableGutters
           sx={categoryStyle}
           onChange={() =>
-            setExpanding((prev) => ({ ...prev, region: !prev.region }))
+            setExpanding((prev) => ({ ...prev, season: !prev.season }))
           }
-          expanded={expanding.region}
+          expanded={expanding.season}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>
-              <b>Region Trend</b>
+              <b>Season Trend</b>
             </Typography>
           </AccordionSummary>
           <AccordionDetails></AccordionDetails>

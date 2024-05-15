@@ -120,12 +120,12 @@ async def trend_travels(
     return response
 
 
-@app.post("/trend/seasons")
-async def trend_seasons(
+@app.post("/trend/regions")
+async def trend_regions(
     query: TrendQuery
 ):
     """
-    Show seasonal trends
+    Show regional trends
     """
     regions = query.regions
     season = query.season
@@ -145,8 +145,9 @@ async def trend_seasons(
                 gfm = gf[gf["Month"]==month]
                 stat[region][cur_year].append(len(gfm))
     response = {}
+    season_diff = season[1] - season[0] + 1
     for region in regions:
-        response[region] = (sum([np.array(stat[region][x]) for x in years])/period).tolist()
+        response[region] = sum([sum(stat[region][y]) for y in years])/(period*season_diff)
     return response
 
 

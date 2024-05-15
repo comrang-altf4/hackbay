@@ -80,27 +80,27 @@ async def trend_travels(
     years = range(year - period, year)
     
     df = journey[(journey["Age"] >= age_group[0]) & (journey["Age"] <= age_group[1])]
-    df = df[df["CustomerState"].isin(regions)]
-    df = df[(df["Month"] >= season[0]) & (df["Month"] <= season[1])]
-    df = df[(df["Year"] >= (year - period)) & (df["Year"] < year)]
-    df = df.sort_values(["Year", "Month"])
-    response = {}
-    for region in regions:
-        dfr = df[df["CustomerState"] == region]
-        dfr = dfr.groupby(["Year", "Month"]).agg({"Age": "count"}).reset_index()
-        dfr = dfr.rename({"Age": "SalesCount"}, axis=1)
-        response[region] = dfr.to_dict(orient="records")
+    # df = df[df["CustomerState"].isin(regions)]
+    # df = df[(df["Month"] >= season[0]) & (df["Month"] <= season[1])]
+    # df = df[(df["Year"] >= (year - period)) & (df["Year"] < year)]
+    # df = df.sort_values(["Year", "Month"])
     # response = {}
     # for region in regions:
-    #     df_region = df[df["CustomerState"] == region]
-    #     response[region] = {}
-    #     for cur_year in years:
-    #         response[region][cur_year] = {}
-    #         gf = df_region[df_region["Year"] == cur_year]
-    #         for month in range(season[0], season[1]+1):
-    #             gfm = gf[gf["Month"]==month]
-    #             response[region][cur_year][month] = len(gfm)
-    return response
+    #     dfr = df[df["CustomerState"] == region]
+    #     dfr = dfr.groupby(["Year", "Month"]).agg({"Age": "count"}).reset_index()
+    #     dfr = dfr.rename({"Age": "SalesCount"}, axis=1)
+    #     response[region] = dfr.to_dict(orient="records")
+    stat = {}
+    for region in regions:
+        df_region = df[df["CustomerState"] == region]
+        stat[region] = []
+        for cur_year in years:
+            gf = df_region[df_region["Year"] == cur_year]
+            for month in range(season[0], season[1]+1):
+                gfm = gf[gf["Month"]==month]
+                stat[region].append({"Year": cur_year, "Month": month, "SalesCount": len(gfm)})
+    
+    return stat
 
 
 @app.post("/trend/regions")

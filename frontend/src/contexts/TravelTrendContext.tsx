@@ -40,7 +40,6 @@ export default function TravelTrendProvider(props: { children: ReactNode }) {
       }).then(async (response) => {
         if (response.status < 400) {
           const responseBody = await response.json();
-          console.log(responseBody);
           setTravelTrend(
             Object.entries<any>(responseBody).map(([region, value]) => {
               const history = (value as any[]).map(

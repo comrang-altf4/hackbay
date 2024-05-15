@@ -48,12 +48,12 @@ const categoryStyle = {
 };
 
 function encodeSeason(season: number[]) {
-  return season[0] + season[1] * 10000;
+  return season[0] * 13 + season[1];
 }
 
 function decodeSeason(encoded: number) {
-  const s = encoded / 10000;
-  const e = encoded % 10000;
+  const s = Math.floor(encoded / 13);
+  const e = encoded % 13;
   return [s, e];
 }
 
@@ -185,6 +185,7 @@ export default function Statistics() {
                 onChange={(_, value) => setAgeGroup(value as number[])}
                 valueLabelDisplay="on"
                 getAriaValueText={(age) => `${age} y/o`}
+                //@ts-ignore
                 components={{ ValueLabel: CustomTooltip }}
               />
             </Box>

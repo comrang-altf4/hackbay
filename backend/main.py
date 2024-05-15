@@ -72,11 +72,11 @@ async def trend_travels(
         df_region = df[df["CustomerState"] == region]
         response[region] = {}
         for cur_year in years:
-            response[region][cur_year] = []
+            response[region][cur_year] = {}
             gf = df_region[df_region["Year"] == cur_year]
             for month in range(season[0], season[1]+1):
                 gfm = gf[gf["Month"]==month]
-                response[region][cur_year].append(len(gfm))
+                response[region][cur_year][month] = len(gfm)
     return response
 
 

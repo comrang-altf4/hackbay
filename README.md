@@ -15,7 +15,7 @@ Following the standard structure of modern web application, our project composes
 
 ##### Server
 
-- Go to server directory `.backend`
+- Go to server directory `./backend`
 - Make a folder named `data`
 - Download the two datasets [journey_final.csv](https://drive.google.com/file/d/1wzgC1ihtMYnI_lOVWHvuT6L3nqYNYXAu/view?usp=sharing) and [number_of_participants_v1.csv](https://drive.google.com/file/d/1TGquUg79TNDJh-tcv5fEqGrR-7Tugusl/view?usp=sharing) and save it under the folder `data`
 - Make sure [Python](https://www.python.org/) installed on your machine
@@ -25,7 +25,7 @@ Following the standard structure of modern web application, our project composes
 
 ##### Client
 
-- Go to client directory `.client`
+- Go to client directory `./frontend`
 - Make sure [Node](https://www.nodejs.org/) installed on your machine
 - Install the package dependencies by `npm install -f`
 - Run the client `npm run dev`

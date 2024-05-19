@@ -5,13 +5,16 @@ import TravelTrendProvider from "./contexts/TravelTrendContext.tsx";
 import RegionTrendProvider from "./contexts/RegionTrendContext.tsx";
 import App from "./App.tsx";
 import "./index.css";
+import TrendPredictionProvider from "./contexts/TrendPredictionContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <SelectionProvider>
     <ProductTrendProvider>
       <TravelTrendProvider>
         <RegionTrendProvider>
-          <App />
+          <TrendPredictionProvider>
+            <App />
+          </TrendPredictionProvider>
         </RegionTrendProvider>
       </TravelTrendProvider>
     </ProductTrendProvider>

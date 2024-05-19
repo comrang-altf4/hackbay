@@ -6,14 +6,14 @@ import {
   useState,
 } from "react";
 
-type PredictionContextType = {
+type PredictionsType = {
   history: number[];
   forecast: number[];
 };
 
 type TrendPredictionContextType = {
   areas: string[];
-  predictions: PredictionContextType;
+  predictions: PredictionsType;
   getPredictions: (area: string) => void;
 };
 
@@ -30,20 +30,21 @@ export default function TrendPredictionProvider(props: {
   children: ReactNode;
 }) {
   const [areas, setAreas] = useState<string[]>([]);
-  const [predictions, setPredictions] = useState<PredictionContextType>({
+  const [predictions, setPredictions] = useState<PredictionsType>({
     history: [],
     forecast: [],
   });
+
   useEffect(() => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || "";
     if (serverUrl) {
-      fetch(serverUrl + "/areas", {
+      fetch(serverUrl + "/sale_areas", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       }).then(async (response) => {
         if (response.status < 400) {
           const responseBody = await response.json();
-          setAreas(responseBody);
+          setAreas(responseBody["areas"]);
         }
       });
     }
@@ -52,10 +53,10 @@ export default function TrendPredictionProvider(props: {
   const getPredictions = (area: string) => {
     const serverUrl = import.meta.env.VITE_SERVER_URL || "";
     if (serverUrl) {
-      fetch(serverUrl + "/areas", {
+      fetch(serverUrl + "/predictive", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Sales_area: area }),
+        body: JSON.stringify({ name: area }),
       }).then(async (response) => {
         if (response.status < 400) {
           const responseBody = await response.json();
@@ -67,6 +68,7 @@ export default function TrendPredictionProvider(props: {
       });
     }
   };
+
   return (
     <TrendPredictionContext.Provider
       value={{ areas, predictions, getPredictions }}

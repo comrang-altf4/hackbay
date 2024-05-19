@@ -1,8 +1,10 @@
+import { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
+  Divider,
   FormControl,
   InputLabel,
   MenuItem,
@@ -13,10 +15,10 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelectionContext } from "../../contexts/SelectionContext";
-import { useState } from "react";
 import ProductTrend from "./ProductTrend";
 import TravelTrend from "./TravelTrend";
 import RegionTrend from "./RegionTrend";
+import TrendPrediction from "./TrendPrediction";
 
 const SEASONS = [
   { name: "January", value: [1, 1] },
@@ -66,6 +68,13 @@ export default function Statistics() {
     travel: true,
     season: true,
   });
+  const [ageRange, setAgeRange] = useState(ageGroup);
+  const lastDebounceIdRef = useRef<any>(undefined);
+
+  useEffect(() => {
+    clearTimeout(lastDebounceIdRef.current);
+    lastDebounceIdRef.current = setTimeout(() => setAgeGroup(ageRange), 250);
+  }, [ageRange]);
 
   return (
     <Box
@@ -181,8 +190,8 @@ export default function Statistics() {
                   },
                 }}
                 getAriaLabel={() => "Age Range"}
-                value={ageGroup}
-                onChange={(_, value) => setAgeGroup(value as number[])}
+                value={ageRange}
+                onChange={(_, value) => setAgeRange(value as number[])}
                 valueLabelDisplay="on"
                 getAriaValueText={(age) => `${age} y/o`}
                 //@ts-ignore
@@ -245,6 +254,8 @@ export default function Statistics() {
             <RegionTrend />
           </AccordionDetails>
         </Accordion>
+        <Divider sx={{ width: "100%", m: 1 }} />
+        <TrendPrediction />
       </Box>
     </Box>
   );

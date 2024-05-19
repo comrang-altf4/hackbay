@@ -1,4 +1,4 @@
-import { LineChart } from "@mui/x-charts";
+import { useEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -7,18 +7,22 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { LineChart } from "@mui/x-charts";
 import { useTrendPredictionContext } from "../../contexts/TrendPredictionContext";
-import { useState } from "react";
-
-const current = new Date();
+import Months from "../../utils/month-mapping";
 
 export default function TrendPrediction() {
   const { areas, predictions, getPredictions } = useTrendPredictionContext();
   const [area, setArea] = useState("");
+  useEffect(() => setArea(areas[0]), [areas]);
+  useEffect(() => getPredictions(area), [area]);
+
+  console.log(predictions.forecast.map((_, i) => `${Months[i % 12]}`));
 
   return (
     <Box
       sx={{
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -27,6 +31,7 @@ export default function TrendPrediction() {
     >
       <Box
         sx={{
+          width: "100%",
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
@@ -34,7 +39,9 @@ export default function TrendPrediction() {
           gap: 1,
         }}
       >
-        <Typography>Future Trend Prediction</Typography>
+        <Typography>
+          <b>Future Trend Prediction</b>
+        </Typography>
         <FormControl size="small" sx={{ width: "30%" }}>
           <InputLabel id="area-select-label">Area</InputLabel>
           <Select
@@ -42,11 +49,7 @@ export default function TrendPrediction() {
             id="area-select"
             value={area}
             label="Season"
-            onChange={(e) => {
-              const v = e.target.value;
-              setArea(v);
-              getPredictions(v);
-            }}
+            onChange={(e) => setArea(e.target.value)}
           >
             {areas.map((area) => (
               <MenuItem key={area} value={area}>
@@ -73,7 +76,7 @@ export default function TrendPrediction() {
           {
             scaleType: "point",
             data: predictions.forecast.map(
-              (_, i) => new Date(current.getTime() + 86400000 * i)
+              (_, i) => `${Months[i % 12]}(${Math.floor(i / 12)})`
             ),
           },
         ]}

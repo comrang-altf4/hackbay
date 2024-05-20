@@ -134,7 +134,6 @@ async def trend_regions(
 
 class SalesArea(BaseModel):
     name: str
-    future_period: int # how many years in future, from 2024 onwards
 
 
 @app.post("/predictive")
@@ -142,26 +141,29 @@ async def predictive(
     sales_area: SalesArea
 ):
     """
-    Show monthly product sales prediction for a few years
+    Show monthly product sales prediction for 2 recent years
     """
     name = sales_area.name
-    future_period = sales_area.future_period
-    steps = future_period*12
-    past_period = 2 # return 2 nearest years
+    period = 2
     if name == "all":
         y = nop[nop["Year"] < year].groupby(["Year", "Month"]).agg({
             "Number_of_participants": "sum"
         })["Number_of_participants"]
     else:
         nops = nop[nop["Sales_area"] == name]
-        if len(nops) < past_period*12:
+        if len(nops) < period*12:
             raise HTTPException(400, "There is not enough data for this sale area")
         y = nops[nops["Year"] < year].groupby(["Year", "Month"]).agg({
             "Number_of_participants": "sum"
         })["Number_of_participants"]
     m = PredictiveModel(name, y)
-    forecast = m.predict(steps)
-    return {"history": y[-past_period*12:].tolist(), "forecast": forecast.tolist()}
+    predictions = m.predict(period*12)
+    return {"history": y[-period*12:].tolist(), "forecast": predictions.tolist()}
+
+
+@app.get("/sale_areas")
+async def sale_areas():
+    return {"areas": nop["Sales_area"].unique().tolist()}
 
 
 if __name__ == "__main__":
